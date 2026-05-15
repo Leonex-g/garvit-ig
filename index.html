@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garvit — Content Creator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f9f9f9;
+    color: #222;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 2.5rem;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-name { font-size: 1.1rem; font-weight: 600; }
+  .nav-links a {
+    margin-left: 1.5rem;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #111; }
+
+  /* ── PROFILE ── */
+  .profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 1.5rem 2rem;
+  }
+  .avatar {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: #e8e8e8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.8rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .profile h1 { font-size: 1.9rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .tagline { font-size: 1.15rem; color: #999; margin-bottom: 0.8rem; }
+  .badge {
+    background: #111; color: #fff;
+    font-size: 0.74rem; padding: 0.28rem 0.9rem;
+    border-radius: 20px; letter-spacing: 0.08em; margin-bottom: 1.4rem;
+  }
+  .bio {
+    max-width: 440px; font-size: 0.9rem;
+    color: #555; line-height: 1.85;
+  }
+  .disclaimer {
+    max-width: 440px;
+    background: #fffbea;
+    border-left: 3px solid #f0c040;
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
+    color: #7a6200;
+    margin-top: 1.4rem;
+    text-align: left;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 36px; height: 2px;
+    background: #e0e0e0;
+    margin: 2.5rem auto;
+    border-radius: 2px;
+  }
+
+  /* ── SOCIALS ── */
+  .socials {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0 1.5rem;
+  }
+  .social-btn {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 25px; font-size: 0.84rem; font-weight: 500;
+    text-decoration: none; color: #222;
+    border: 1.5px solid #e0e0e0; background: #fff;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+  .social-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.09); }
+  .social-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+  /* ── CONTACT ── */
+  .contact { max-width: 460px; margin: 0 auto; padding: 0 1.5rem 3.5rem; }
+  .contact h2 { font-size: 1.1rem; font-weight: 600; text-align: center; margin-bottom: 0.5rem; }
+  .email-line { text-align: center; font-size: 0.84rem; color: #888; margin-bottom: 1.3rem; }
+  .email-line a { color: #222; font-weight: 500; text-decoration: none; }
+  .email-line a:hover { text-decoration: underline; }
+  .contact form { display: flex; flex-direction: column; gap: 0.8rem; }
+  .contact input, .contact textarea {
+    width: 100%; padding: 0.72rem 1rem;
+    border: 1.5px solid #e0e0e0; border-radius: 10px;
+    font-family: 'Poppins', sans-serif; font-size: 0.87rem;
+    background: #fff; color: #222; outline: none; transition: border 0.2s;
+  }
+  .contact input:focus, .contact textarea:focus { border-color: #111; }
+  .contact textarea { resize: vertical; min-height: 100px; }
+  .contact button {
+    background: #111; color: #fff; border: none;
+    border-radius: 25px; padding: 0.75rem;
+    font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, opacity 0.2s;
+  }
+  .contact button:hover { background: #333; }
+  .contact button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .form-msg {
+    text-align: center; font-size: 0.84rem;
+    padding: 0.65rem; border-radius: 8px;
+    display: none;
+  }
+  .form-msg.success { background: #e6f9ef; color: #1a7a45; display: block; }
+  .form-msg.error   { background: #fdecea; color: #b00020; display: block; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; font-size: 0.77rem;
+    color: #bbb; padding: 1.4rem;
+    border-top: 1px solid #eee;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links a { margin-left: 0.9rem; font-size: 0.82rem; }
+    .profile { padding: 2.5rem 1.2rem 1.8rem; }
+    .profile h1 { font-size: 1.6rem; }
+    .tagline { font-size: 1rem; }
+    .bio, .disclaimer { font-size: 0.85rem; }
+    .socials { gap: 0.55rem; padding: 0 1rem; }
+    .social-btn { padding: 0.45rem 0.9rem; font-size: 0.8rem; }
+    .contact { padding: 0 1.1rem 3rem; }
+    .divider { margin: 2rem auto; }
+  }
+
+  @media (max-width: 380px) {
+    .nav-links { display: none; }
+    .profile h1 { font-size: 1.4rem; }
+    .avatar { width: 90px; height: 90px; font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-name">Garvit</span>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#socials">Socials</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- PROFILE -->
+<section class="profile" id="about">
+  <div class="avatar">😄</div>
+  <h1>Garvit</h1>
+  <div class="tagline">٨ﮩ٨ـﮩﮩ٨ـﮩॐ٨ﮩ٨ـﮩﮩ٨ـﮩ</div>
+  <span class="badge">Content Creator</span>
+  <p class="bio">
+    Hey! I'm Garvit — a content creator who makes funny and relatable videos.
+    My goal is simple: put a smile on your face. Whether it's a situation you've been in,
+    a thought you've had, or just pure chaos — I got you. 😂
+  </p>
+  <div class="disclaimer">
+    ⚠️ All videos are made purely for <strong>entertainment purposes</strong>.
+    No offense intended to anyone — just good vibes and laughs only!
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOCIALS -->
+<section id="socials">
+  <div class="socials">
+
+    <a href="#" class="social-btn">
+      <svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.6 2 12 2 12 2s-4.6 0-7.3.1c-.6.1-1.9.1-3 1.3C.8 4.2.5 6.2.5 6.2S.2 8.5.2 10.8v2.1c0 2.3.3 4.6.3 4.6s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.2 21.7 12 21.8 12 21.8s4.6 0 7.3-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.3.3-4.6v-2.1c0-2.3-.3-4.6-.3-4.6zM9.7 15.5V8.4l8.1 3.6-8.1 3.5z"/></svg>
+      YouTube
+    </a>
+
+    <a href="#" class="social-btn">
+      <svg viewBox="0 0 24 24"><defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f09433"/><stop offset="50%" stop-color="#dc2743"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs>
+      <path fill="url(#ig)" d="M12 2.2c3.2 0 3.6 0 4.9.1 3.3.2 4.8 1.7 5 5 .1 1.3.1 1.6.1 4.9s0 3.6-.1 4.9c-.2 3.3-1.7 4.8-5 5-1.3.1-1.6.1-4.9.1s-3.6 0-4.9-.1c-3.3-.2-4.8-1.7-5-5C2 16.6 2 16.3 2 13s0-3.6.1-4.9c.2-3.3 1.7-4.8 5-5C8.4 2.2 8.8 2.2 12 2.2zm0-2.2C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1.0 8.3 0 8.7 0 12s0 3.7.1 4.9C.3 21.3 2.7 23.7 7.1 23.9c1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9C23.7 2.7 21.3.3 16.9.1 15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 100 12.4A6.2 6.2 0 0012 5.8zm0 10.2a4 4 0 110-8 4 4 0 010 8zm6.4-11.8a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/>
+      </svg>
+      Instagram
+    </a>
+
+    <a href="#" class="social-btn">
+      <svg viewBox="0 0 24 24" fill="#000"><path d="M19.6 3.3A4.9 4.9 0 0114.8 0h-3.6v16.4a2.9 2.9 0 11-2-2.8V10a6.5 6.5 0 105.6 6.4V8.2a8.4 8.4 0 004.8 1.5V6.1a4.9 4.9 0 01-3.4-1.4 4.7 4.7 0 01-1.4-1.4h3.8z"/></svg>
+      TikTok
+    </a>
+
+    <a href="#" class="social-btn">
+      <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3H15.8c-1.5 0-2 .9-2 1.9v2.2h3.3l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.1z"/></svg>
+      Facebook
+    </a>
+
+    <a href="#" class="social-btn">
+      <svg viewBox="0 0 24 24" fill="#000"><path d="M18.2 2h3.5l-7.6 8.7L23 22h-7l-5.5-7.2L4.1 22H.6l8.2-9.3L1 2h7.2l4.9 6.5L18.2 2zm-1.2 18h1.9L7.1 4H5.1L17 20z"/></svg>
+      Twitter / X
+    </a>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact" class="contact">
+  <h2>Get in Touch 👋</h2>
+  <p class="email-line">Or email directly at <a href="mailto:freefire.server207ff@gmail.com">freefire.server207ff@gmail.com</a></p>
+  <form id="contactForm">
+    <input type="text" id="from_name" placeholder="Your Name" required />
+    <input type="email" id="from_email" placeholder="Your Email" required />
+    <textarea id="message" placeholder="Your message..." required></textarea>
+    <div class="form-msg" id="formMsg"></div>
+    <button type="submit" id="submitBtn">Send Message ✉️</button>
+  </form>
+</section>
+
+<footer>
+  © 2025 Garvit &nbsp;·&nbsp; All videos for entertainment only 😄
+</footer>
+
+<script>
+  // ── EmailJS Setup ──
+  // STEP 1: Go to https://www.emailjs.com and sign up (free)
+  // STEP 2: Add Gmail service → get your Service ID
+  // STEP 3: Create an Email Template with variables: {{from_name}}, {{from_email}}, {{message}}
+  //         Set "To Email" in the template to: freefire.server207ff@gmail.com
+  // STEP 4: Replace the 3 placeholder values below with your actual IDs
+
+  const EMAILJS_PUBLIC_KEY  = '5MdVGc-3mOrTAWQF4';
+  const EMAILJS_SERVICE_ID  = 'service_xznqhm3';
+  const EMAILJS_TEMPLATE_ID = 'template_go9fz2k';
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('formMsg');
+
+    // Reset message
+    msg.className = 'form-msg';
+    msg.textContent = '';
+
+    const name    = document.getElementById('from_name').value.trim();
+    const email   = document.getElementById('from_email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if (!name || !email || !message) {
+      msg.textContent = 'Please fill in all fields.';
+      msg.className = 'form-msg error';
+      return;
+    }
+
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      from_name:  name,
+      from_email: email,
+      message:    message,
+      to_email:   'freefire.server207ff@gmail.com'
+    })
+    .then(() => {
+      msg.textContent = '🎉 Message sent! I\'ll get back to you soon.';
+      msg.className = 'form-msg success';
+      btn.textContent = 'Send Message ✉️';
+      btn.disabled = false;
+      document.getElementById('contactForm').reset();
+    })
+    .catch((err) => {
+      console.error('EmailJS error:', err);
+      msg.textContent = '❌ Something went wrong. Please try again or email directly.';
+      msg.className = 'form-msg error';
+      btn.textContent = 'Send Message ✉️';
+      btn.disabled = false;
+    });
+  });
+</script>
+
+</body>
+</html>
