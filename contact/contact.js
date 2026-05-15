@@ -53,7 +53,7 @@ window.addEventListener("load", () => {
       from_name:  name,
       from_email: email,
       message:    message,
-      to_email:   "freefire.server207ff@gmail.com"
+      to_email:   "garvitt.creator@gmail.com"
     })
     .then(() => {
       formMsg.textContent = "🎉 Message sent! I'll get back to you soon.";
